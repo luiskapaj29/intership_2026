@@ -1,3 +1,4 @@
+
 // HTML CSS gjenerated using ChatGPT
 /*
 //1.4 ex 1 
@@ -82,6 +83,10 @@ console.log(tasks);
 // removed from the array and the index is now valid.
 */
 
+
+
+
+/*
 //Homework – JavaScript Practice & Task Functions
 
 //a
@@ -178,16 +183,146 @@ console.log(tasks);
 console.log(`My next task is ${tasks[0].title}, Completed: ${tasks[0].completed}`);
 
 //Exercise 2
+//Exercise 2 – Advanced 2: 
+
 tasks.forEach(function (task, index) {
   console.log(`#${index} – ${task.title} (completed: ${task.completed})`);
 });
 
-//Exercise 3
-// Advanced 3 – Arrow function version
-const evenOrOddArrow = (number) => number % 2 === 0 ? "Even" : "Odd";
 
-// Test it
-console.log(evenOrOddArrow(7));  // Odd
-console.log(evenOrOddArrow(12)); // Even
+//Exercise 3 – Advanced 3
 
+const greetArrow = (name) => `Hello, ${name}!`;
+console.log(greetArrow("Luis"));
+*/
+
+//1.5 DOM API Homework exercise 
+ // Tasks array
+ /*
+let tasks = [];
+
+// DOM elements
+const form = document.getElementById("task-form");
+const input = document.getElementById("task-input");
+const ul = document.getElementById("task-list");
+
+// Add task function
+function addTask(title) {
+  tasks.push(title);
+}
+
+// Delete task function
+function deleteTask(index) {
+  tasks.splice(index, 1);
+}
+
+// Render tasks
+function renderTasks() {
+  ul.innerHTML = "";
+
+  tasks.forEach((task, index) => {
+    const li = document.createElement("li");
+    li.textContent = task;
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+
+    deleteBtn.addEventListener("click", () => {
+      deleteTask(index);
+      renderTasks();
+      console.log(tasks); // verify array update
+    });
+
+    li.appendChild(deleteBtn);
+    ul.appendChild(li);
+  });
+}
+
+// Form submit event
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const title = input.value.trim();
+  if (title === "") return;
+
+  addTask(title);
+  renderTasks();
+  input.value = "";
+});
+
+// Test data 
+addTask("Learn JavaScript");
+addTask("Build a To-Do App");
+renderTasks();
+*/
+
+const API_URL = "https://jsonplaceholder.typicode.com/todos?_limit=5";
+
+// Internal tasks array used by the UI
+let tasks = [];
+
+/**
+ * Render tasks into the #itemList element
+ */
+function renderTasks() {
+  const ul = document.getElementById('itemList');
+  if (!ul) return;
+
+  ul.innerHTML = '';
+
+  tasks.forEach((task, index) => {
+    const li = document.createElement('li');
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = !!task.completed;
+    checkbox.addEventListener('change', () => {
+      task.completed = checkbox.checked;
+    });
+
+    const span = document.createElement('span');
+    span.textContent = ' ' + task.title;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.addEventListener('click', () => {
+      tasks.splice(index, 1);
+      renderTasks();
+    });
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+    li.appendChild(deleteBtn);
+    ul.appendChild(li);
+  });
+}
+
+/**
+ * Fetch tasks from the API, map into internal format, then render
+ */
+async function loadTasksFromApi() {
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) {
+      console.error('Failed to fetch tasks. Status:', res.status);
+      return;
+    }
+
+    const data = await res.json();
+
+    tasks = data.map(item => ({
+      title: item.title,
+      completed: !!item.completed
+    }));
+
+    renderTasks();
+  } catch (err) {
+    console.error('Error while fetching tasks:', err);
+  }
+}
+
+// Load tasks once on page load
+document.addEventListener('DOMContentLoaded', () => {
+  loadTasksFromApi();
+});
 
